@@ -1,0 +1,165 @@
+<% if (!locals.pjax) { %><%- include('partials/header') %>
+<%- include('partials/nav') %>
+<% } %>
+
+<div id="app-content">
+<main class="max-w-7xl mx-auto px-8 py-8">
+
+    <div class="hero-strip mb-6">
+        <div class="stat-block">
+            <div class="stat-num" id="stat-total"><%= stats.total %></div>
+            <div class="stat-label">Total Logged</div>
+        </div>
+        <div class="stat-block">
+            <div class="stat-num" style="color:#f87171;" id="stat-lost"><%= stats.lostCount %></div>
+            <div class="stat-label">Active Lost</div>
+        </div>
+        <div class="stat-block">
+            <div class="stat-num" style="color:#4ade80;" id="stat-found"><%= stats.foundCount %></div>
+            <div class="stat-label">Active Found</div>
+        </div>
+        <div class="stat-block">
+            <div class="stat-num" style="color:#d69e2e;" id="stat-resolved"><%= stats.resolvedCount %></div>
+            <div class="stat-label">Reunited</div>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-between mb-4" style="flex-wrap: wrap; gap: 12px;">
+        <h1 class="text-2xl font-black tracking-tight text-gray-900" style="margin: 0;">Lost &amp; Found Board</h1>
+        <a href="/post-item" data-pjax class="btn-primary" style="width: auto; padding: 10px 20px; display: inline-flex;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 5v14M5 12h14"/></svg>
+            Post an Item
+        </a>
+    </div>
+
+    <div class="board-toolbar mb-4">
+        <div class="flex items-center gap-2" style="flex-wrap: wrap;" id="filter-chips">
+            <a href="/board?type=all" data-pjax class="chip <%= activeType === 'all' ? 'active' : '' %>">All</a>
+            <a href="/board?type=lost" data-pjax class="chip <%= activeType === 'lost' ? 'active' : '' %>">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4.5 8-11.8A8 8 0 0 0 4 10.2C4 17.5 12 22 12 22Z"/></svg>
+                Lost
+            </a>
+            <a href="/board?type=found" data-pjax class="chip <%= activeType === 'found' ? 'active' : '' %>">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                Found
+            </a>
+            <a href="/board?saved=true" data-pjax class="chip <%= activeSaved ? 'active' : '' %>">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 17.3-6.2 3.3 1.2-6.9L2 8.9l7-1L12 1.5l3 6.4 7 1-5 4.8 1.2 6.9Z"/></svg>
+                Saved
+            </a>
+            <select id="category-filter" class="chip" style="appearance:auto; -webkit-appearance:menulist; padding: 6px 10px;">
+                <option value="all" <%= activeCategory === 'all' ? 'selected' : '' %>>All Categories</option>
+                <% categories.forEach(c => { %>
+                    <option value="<%= c %>" <%= activeCategory === c ? 'selected' : '' %>><%= c.charAt(0).toUpperCase() + c.slice(1) %></option>
+                <% }) %>
+            </select>
+        </div>
+        <form action="/board" method="GET" class="search-form" id="search-form">
+            <% if (activeType !== 'all') { %><input type="hidden" name="type" value="<%= activeType %>"><% } %>
+            <% if (activeCategory !== 'all') { %><input type="hidden" name="category" value="<%= activeCategory %>"><% } %>
+            <% if (activeSaved) { %><input type="hidden" name="saved" value="true"><% } %>
+            <input type="text" name="search" value="<%= search %>" placeholder="Search title, description, location…" class="custom-input search-input">
+        </form>
+    </div>
+
+    <div id="board-grid">
+    <% if (!items || items.length === 0) { %>
+        <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="margin: 0 auto 12px; display:block;"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <p>No matching reports on the campus board yet. Be the first to post one.</p>
+        </div>
+    <% } else { %>
+        <div class="grid board-grid">
+            <% items.forEach(item => {
+                const catIcons = { electronics: 'smartphone', documents: 'file-text', keys: 'key', bags: 'backpack', accessories: 'watch', clothing: 'shirt', books: 'book-open', other: 'package' };
+                const caseId = 'TF-' + String(item._id).slice(-6).toUpperCase();
+            %>
+                <div class="case-card <%= item.resolved ? 'resolved' : '' %>" data-item-id="<%= item._id %>" data-poster="<%= item.postedBy %>" data-email="<%= item.postedByEmail %>" data-title="<%= item.title %>">
+
+                    <div class="case-media">
+                        <% if (item.image) { %>
+                            <img src="<%= item.image %>" alt="<%= item.title %>">
+                        <% } else { %>
+                            <div class="case-placeholder">
+                                <i data-lucide="<%= catIcons[item.category] || 'package' %>"></i>
+                                <span>No Photo</span>
+                            </div>
+                        <% } %>
+
+                        <span class="stamp <%= item.type === 'lost' ? 'stamp-lost' : 'stamp-found' %>"><%= item.type %></span>
+                        <% if (item.resolved) { %><div class="stamp-resolved">Resolved</div><% } %>
+
+                        <button class="save-btn js-save <%= item.saved ? 'saved' : '' %>" data-id="<%= item._id %>" title="Save item" type="button">
+                            <svg viewBox="0 0 24 24" fill="<%= item.saved ? 'currentColor' : 'none' %>" stroke="currentColor" stroke-width="2"><path d="m12 17.3-6.2 3.3 1.2-6.9L2 8.9l7-1L12 1.5l3 6.4 7 1-5 4.8 1.2 6.9Z"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="case-body">
+                        <div class="case-id mono">CASE #<%= caseId %></div>
+                        <h3 class="case-title"><%= item.title %></h3>
+
+                        <div>
+                            <span class="category-tag">
+                                <i data-lucide="<%= catIcons[item.category] || 'package' %>"></i>
+                                <%= item.category %>
+                            </span>
+                            <% if (item.reward) { %>
+                                <span class="reward-tag">
+                                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M9 13.5 6 22l6-3 6 3-3-8.5"/></svg>
+                                    Reward<% if (item.rewardAmount) { %>: <%= item.rewardAmount %><% } %>
+                                </span>
+                            <% } %>
+                        </div>
+
+                        <p class="case-desc"><%= item.description || 'No description recorded for this item.' %></p>
+
+                        <div class="case-poster">Posted by <span><%= item.postedBy || 'Anonymous Student' %></span></div>
+
+                        <div class="case-meta">
+                            <span><i data-lucide="map-pin"></i> <%= item.location %></span>
+                            <span><i data-lucide="clock"></i> <%= new Date(item.createdAt).toLocaleDateString() %></span>
+                        </div>
+
+                        <div class="case-actions">
+                            <% if (!item.resolved) { %>
+                                <button class="btn-primary js-resolve" data-id="<%= item._id %>" type="button" style="flex: 1;">Mark as Resolved</button>
+                            <% } else { %>
+                                <button class="btn-primary" style="flex:1; opacity:0.5; cursor:not-allowed; background-image:none; background-color:#9ca3af; color:#fff;" disabled>Resolved</button>
+                            <% } %>
+                            <button class="icon-action js-contact" data-id="<%= item._id %>" title="Contact poster" type="button">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 6 12 13 2 6"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>
+                            </button>
+                            <% if (item.canManage) { %>
+                                <button class="icon-action js-delete" data-id="<%= item._id %>" title="Delete" type="button">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                                </button>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    <% } %>
+    </div>
+</main>
+
+<div class="modal-overlay" id="contact-modal">
+    <div class="modal-box">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-black" style="margin:0;">Contact the poster</h3>
+            <button class="modal-close" type="button">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <p class="text-sm text-gray-700" style="margin: 0 0 4px;">Item: <strong id="contact-item-title"></strong></p>
+        <p class="text-sm text-gray-500" style="margin: 0 0 16px;">Posted by <span id="contact-item-poster" class="font-semibold"></span></p>
+        <a id="contact-mailto" href="#" class="btn-primary" style="display:flex; text-decoration:none;">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 6 12 13 2 6"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>
+            Email About This Item
+        </a>
+        <p id="contact-no-email" class="text-xs text-gray-400 mt-2" style="display:none; text-align:center;">This poster hasn't shared a contact email.</p>
+    </div>
+</div>
+</div>
+<% if (!locals.pjax) { %></body>
+</html><% } %>

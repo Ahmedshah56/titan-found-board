@@ -1,0 +1,49 @@
+<%- include('partials/header') %>
+<div class="auth-shell">
+    <div class="auth-card p-10 w-full max-w-md">
+
+        <div class="text-center mb-6">
+            <div class="auth-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>
+            </div>
+            <h1 class="text-2xl font-black tracking-tight text-gray-900">Create Account</h1>
+            <p class="text-xs text-gray-400 font-medium mt-1">Access the central lost &amp; found database</p>
+        </div>
+
+        <div id="form-error" class="alert-error" style="<%= error ? '' : 'display:none;' %>">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            <span id="form-error-text"><%= error || '' %></span>
+        </div>
+
+        <form id="signup-form" class="flex flex-col gap-4">
+            <div>
+                <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">Full Name</label>
+                <input type="text" name="name" required placeholder="Ahmed Shah" class="custom-input">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">Email Address</label>
+                <input type="email" name="email" required placeholder="you@titan.edu.pk" class="custom-input">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">Password</label>
+                <input type="password" name="password" minlength="6" required placeholder="••••••••" class="custom-input">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">Confirm Password</label>
+                <input type="password" name="confirmPassword" minlength="6" required placeholder="••••••••" class="custom-input">
+            </div>
+
+            <button type="submit" id="signup-btn" class="btn-primary mt-2">Complete Registration</button>
+        </form>
+
+        <p class="text-center text-xs text-gray-500 mt-5">
+            Already registered? <a href="/login" style="color: var(--gold-dark); font-weight: 700; text-decoration: none;">Login here</a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

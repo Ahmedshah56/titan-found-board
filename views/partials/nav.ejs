@@ -1,0 +1,36 @@
+<nav class="titan-nav" id="site-nav">
+    <div class="titan-nav-top">
+        <a href="/board" data-pjax class="titan-brand">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 3 7v6c0 5 4 9 9 9s9-4 9-9V7l-9-5Z"/><path d="m9 12 2 2 4-4"/></svg>
+            TITAN
+        </a>
+        <button type="button" class="nav-toggle" id="nav-toggle-btn" aria-label="Toggle menu" aria-controls="nav-panel" aria-expanded="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+    </div>
+    <div class="nav-panel" id="nav-panel">
+        <div class="titan-nav-links">
+            <a href="/board" data-pjax class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+                Board
+            </a>
+            <a href="/post-item" data-pjax class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                Post an Item
+            </a>
+            <a href="/profile" data-pjax class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+                Profile
+            </a>
+        </div>
+        <div class="nav-user">
+            <span class="font-medium text-white">Hi, <%= user.name %></span>
+            <form action="/logout" method="POST" style="display: inline; margin: 0; padding: 0;">
+                <button type="submit" class="icon-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+                    Logout
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>

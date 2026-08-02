@@ -1,0 +1,110 @@
+<% if (!locals.pjax) { %><%- include('partials/header') %>
+<%- include('partials/nav') %>
+<% } %>
+
+<div id="app-content">
+<main class="max-w-2xl mx-auto px-8 py-10">
+    <div class="blueprint-card p-8">
+
+        <div class="mb-6" style="border-bottom: 1px solid var(--line); padding-bottom: 12px;">
+            <h1 class="text-xl font-black text-gray-900" style="margin: 0;">Post an Item</h1>
+            <p class="text-xs text-gray-400 font-medium mt-0.5">Publish a lost or found report to the campus board.</p>
+        </div>
+
+        <div id="form-error" class="alert-error" style="<%= error ? '' : 'display:none;' %>">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            <span id="form-error-text"><%= error || '' %></span>
+        </div>
+
+        <form id="post-item-form" class="flex flex-col gap-4">
+            <div class="type-row">
+                <label style="flex:1; cursor:pointer;">
+                    <input type="radio" name="type" value="lost" checked style="display:none;" class="type-radio">
+                    <div class="type-card" data-value="lost" style="border: 1.5px solid var(--gold); background:#fdf6e6; border-radius: 8px; padding: 12px; text-align:center; font-weight:700; font-size:13px; text-transform:uppercase;">
+                        🔴 I Lost Something
+                    </div>
+                </label>
+                <label style="flex:1; cursor:pointer;">
+                    <input type="radio" name="type" value="found" style="display:none;" class="type-radio">
+                    <div class="type-card" data-value="found" style="border: 1.5px solid var(--line); border-radius: 8px; padding: 12px; text-align:center; font-weight:700; font-size:13px; text-transform:uppercase;">
+                        🟢 I Found Something
+                    </div>
+                </label>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">Item Title</label>
+                <input type="text" name="title" required placeholder="e.g., Casio Scientific Calculator" class="custom-input">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">Description</label>
+                <textarea name="description" rows="3" placeholder="Describe unique markers, color, brand, custom stickers…" class="custom-input"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">Contact Email</label>
+                <input type="email" name="contactEmail" required value="<%= userEmail %>" placeholder="you@titan.edu.pk" class="custom-input">
+                <p style="margin: 4px 0 0; font-size: 11px; color: #a99f88;">Shown to anyone who wants to contact you about this item. Defaults to your account email — change it if you'd rather use another address.</p>
+            </div>
+
+            <div class="form-row-2">
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">Category</label>
+                    <select name="category" class="custom-input" style="cursor: pointer; height: 42px;">
+                        <% categories.forEach(c => { %>
+                            <option value="<%= c %>"><%= c.charAt(0).toUpperCase() + c.slice(1) %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">Location</label>
+                    <select name="location" class="custom-input" style="cursor: pointer; height: 42px;">
+                        <% locations.forEach(l => { %>
+                            <option><%= l %></option>
+                        <% }) %>
+                    </select>
+                </div>
+            </div>
+
+            <div class="toggle-row" style="border: 1.5px solid var(--line); border-radius: 8px; padding: 10px 14px;">
+                <div>
+                    <div class="text-xs font-bold text-gray-700 uppercase tracking-wide">Offer a reward</div>
+                    <div class="text-xs text-gray-400">Boosts visibility for high-value lost items</div>
+                </div>
+                <label class="toggle">
+                    <input type="checkbox" name="reward" id="reward-toggle">
+                    <span class="toggle-track"></span>
+                </label>
+            </div>
+            <div id="reward-amount-wrap" style="display:none;">
+                <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">Reward Amount / Note</label>
+                <input type="text" name="rewardAmount" placeholder="e.g., Rs. 500" class="custom-input">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">Photo</label>
+                <div class="dropzone" id="dropzone">
+                    <input type="file" id="itemImageInput" name="image" accept="image/*">
+                    <div id="dropzone-idle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+                        <p style="margin:0; font-size:13px; font-weight:600;">Click or drag a photo here</p>
+                        <p style="margin:4px 0 0; font-size:11px; color:#a99f88;">Max 1 MB · JPG or PNG</p>
+                    </div>
+                    <div class="dropzone-preview" id="dropzone-preview">
+                        <img id="preview-img" src="" alt="Preview">
+                        <p style="margin:0; font-size:11px; color:#a99f88;">Click to change photo</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions pt-4" style="border-top: 1px solid var(--line); margin-top: 12px;">
+                <a href="/board" data-pjax class="btn-ghost">Cancel</a>
+                <button type="submit" id="submit-btn" class="btn-primary" style="width: auto; padding: 10px 24px;">Post Item</button>
+            </div>
+        </form>
+    </div>
+</main>
+</div>
+<% if (!locals.pjax) { %></body>
+</html><% } %>

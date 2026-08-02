@@ -1,0 +1,94 @@
+<% if (!locals.pjax) { %><%- include('partials/header') %>
+<%- include('partials/nav') %>
+<% } %>
+
+<div id="app-content">
+<main class="max-w-5xl mx-auto px-8 py-10">
+
+    <div class="blueprint-card p-6 flex items-center justify-between mb-6" style="flex-wrap: wrap; gap: 16px;">
+        <div class="flex items-center gap-4">
+            <div class="flex items-center justify-center" style="width: 3.5rem; height: 3.5rem; background: var(--navy); color: #fff; font-weight: 800; font-size: 1.15rem; border-radius: 12px; font-family: 'Space Grotesk', sans-serif;">
+                <%= (typeof email !== 'undefined' && email) ? email.substring(0, 2).toUpperCase() : 'ST' %>
+            </div>
+            <div class="flex flex-col">
+                <h2 class="text-xl font-black text-gray-900" style="margin: 0;"><%= user.name %></h2>
+                <p class="text-xs text-gray-500 font-medium" style="margin: 4px 0 0;"><%= email %></p>
+            </div>
+        </div>
+        <div class="flex items-center gap-6">
+            <div class="text-center">
+                <div class="stat-num" id="profile-posted-count" style="color: var(--ink); font-size: 1.3rem;"><%= items.length %></div>
+                <div class="stat-label" style="color: var(--ink-soft);">Posted</div>
+            </div>
+            <div class="text-center">
+                <div class="stat-num" id="profile-resolved-count" style="color: var(--green); font-size: 1.3rem;"><%= resolvedCount %></div>
+                <div class="stat-label" style="color: var(--ink-soft);">Resolved</div>
+            </div>
+            <div class="text-center">
+                <div class="stat-num" id="profile-saved-count" style="color: var(--gold-dark); font-size: 1.3rem;"><%= savedCount %></div>
+                <div class="stat-label" style="color: var(--ink-soft);">Saved</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-6" style="border-bottom: 2px solid var(--line); padding-bottom: 0.5rem;">
+        <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest" style="margin: 0; letter-spacing: 0.1em;">
+            My Activity
+        </h3>
+    </div>
+
+    <% if (!items || items.length === 0) { %>
+        <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="margin: 0 auto 12px; display:block;"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+            <p>You haven't posted anything to the board yet.</p>
+        </div>
+    <% } else { %>
+        <div class="grid profile-grid">
+            <% items.forEach(item => {
+                const catIcons = { electronics: 'smartphone', documents: 'file-text', keys: 'key', bags: 'backpack', accessories: 'watch', clothing: 'shirt', books: 'book-open', other: 'package' };
+                const caseId = 'TF-' + String(item._id).slice(-6).toUpperCase();
+            %>
+                <div class="case-card <%= item.resolved ? 'resolved' : '' %>" data-item-id="<%= item._id %>">
+                    <div class="case-media">
+                        <% if (item.image) { %>
+                            <img src="<%= item.image %>" alt="<%= item.title %>">
+                        <% } else { %>
+                            <div class="case-placeholder">
+                                <i data-lucide="<%= catIcons[item.category] || 'package' %>"></i>
+                                <span>No Photo</span>
+                            </div>
+                        <% } %>
+                        <span class="stamp <%= item.type === 'lost' ? 'stamp-lost' : 'stamp-found' %>"><%= item.type %></span>
+                        <% if (item.resolved) { %><div class="stamp-resolved">Resolved</div><% } %>
+                    </div>
+                    <div class="case-body">
+                        <div class="case-id mono">CASE #<%= caseId %></div>
+                        <h3 class="case-title"><%= item.title %></h3>
+                        <span class="category-tag">
+                            <i data-lucide="<%= catIcons[item.category] || 'package' %>"></i>
+                            <%= item.category %>
+                        </span>
+                        <p class="case-desc"><%= item.description || 'No description recorded for this item.' %></p>
+                        <div class="case-meta">
+                            <span><i data-lucide="map-pin"></i> <%= item.location %></span>
+                            <span><i data-lucide="clock"></i> <%= new Date(item.createdAt).toLocaleDateString() %></span>
+                        </div>
+                        <div class="case-actions">
+                            <% if (!item.resolved) { %>
+                                <button class="btn-primary js-resolve" data-id="<%= item._id %>" type="button" style="flex: 1;">Mark as Resolved</button>
+                            <% } else { %>
+                                <button class="btn-primary" style="flex:1; opacity:0.5; cursor:not-allowed; background-image:none; background-color:#9ca3af; color:#fff;" disabled>Resolved</button>
+                            <% } %>
+                            <button class="icon-action js-delete" data-id="<%= item._id %>" title="Delete" type="button">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    <% } %>
+</main>
+</div>
+<% if (!locals.pjax) { %></body>
+</html><% } %>
